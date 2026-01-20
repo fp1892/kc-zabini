@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Zabini Events</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="/basics/assets/basics.css" />
+</head>
+
+<body style="background-image:url('/basics/basics-hub-background.jpg');">
+
+  <!-- Login Gate -->
+  <div id="loginOverlay">
+    <div id="loginPanel">
+      <h2>Zabini Events</h2>
+      <p class="small">Access is protected. Please enter the password.</p>
+      <form id="loginForm">
+        <input id="passwordInput" type="password" placeholder="Password" required />
+        <button type="submit">Unlock</button>
+      </form>
+      <div id="loginStatus"></div>
+    </div>
+  </div>
+
+  <div id="protectedRoot" style="display:none;">
+    <div class="container">
+
+      <div class="header">
+        <div>
+          <h1>EVENTS</h1>
+          <div class="subtitle">Overview of current event pages</div>
+        </div>
+
+        <div class="nav">
+          <a class="pill" href="https://zabini.org">Back to Hub</a>
+          <a class="pill" href="https://mvp.zabini.org">MVP</a>
+          <a class="pill" href="https://wiki.zabini.org">Wiki</a>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Current event pages</h2>
+        <p class="small">
+          This area contains time-based pages. Each page has a dedicated URL and its own background.
+        </p>
+        <hr class="sep" />
+        <div class="nav">
+          <a class="pill" href="/basics/state-power/">Open: State Power</a>
+        </div>
+      </div>
+
+      <div class="footer">
+        guide.zabini.org/basics · GitHub Pages · Access protected via the shared password gate
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/basics/assets/basics.js"></script>
+</body>
+</html>
