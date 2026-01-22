@@ -1,0 +1,42 @@
+console.log("KC HUB", "v1.0");
+
+/*
+  Optional helper:
+  - Light "reachability" check for external links (best effort).
+  - Internal paths always exist as long as your GitHub Pages routes exist.
+*/
+
+const services = [
+  { id: "wiki", url: "https://wiki.zabini.org", label: "Wiki" },
+  { id: "kcpay", url: "https://kcpay.midoubuy.com", label: "KCPay" }
+];
+
+async function checkService(service) {
+  try {
+    const controller = new AbortController();
+    setTimeout(() => controller.abort(), 2500);
+
+    await fetch(service.url, {
+      method: "HEAD",
+      mode: "no-cors",
+      signal: controller.signal
+    });
+
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+async function runHealthCheck() {
+  for (const s of services) {
+    const el = document.querySelector(`[data-service="${s.id}"]`);
+    if (!el) continue;
+
+    const ok = await checkService(s);
+    el.dataset.status = ok ? "ok" : "down";
+    el.title = ok ? `${s.label} reachable` : `${s.label} not reachable`;
+  }
+}
+
+document.addEventListener("DOMContentLoaded", () => runHealthCheck());
