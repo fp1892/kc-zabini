@@ -1,0 +1,84 @@
+/* ===== Global Lock Screen ===== */
+
+#loginOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+
+  /* IMPORTANT: absolute URL so it also works from wiki.zabini.org */
+  background-image: url("https://kc.zabini.org/lock-screen.png");
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+
+  display: grid;
+  place-items: center;
+}
+
+#loginOverlay::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(60% 60% at 50% 40%, rgba(0,0,0,0.25), rgba(0,0,0,0.75)),
+    rgba(0,0,0,0.65);
+}
+
+#loginPanel {
+  position: relative;
+  z-index: 1;
+
+  min-width: 280px;
+  max-width: 360px;
+  padding: 28px;
+
+  border-radius: 18px;
+  background: rgba(10,10,14,0.82);
+  border: 1px solid rgba(212,175,55,0.28);
+
+  box-shadow:
+    0 30px 80px rgba(0,0,0,0.85),
+    0 0 40px rgba(212,175,55,0.18);
+
+  backdrop-filter: blur(12px);
+  text-align: center;
+}
+
+#loginPanel h2 {
+  margin: 0 0 16px;
+  font-family: "Cinzel", serif;
+  color: #d4af37;
+  letter-spacing: 1px;
+}
+
+#loginPanel input {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(212,175,55,0.25);
+  background: rgba(0,0,0,0.35);
+  color: #f5f1e8;
+}
+
+#loginPanel button {
+  width: 100%;
+  margin-top: 12px;
+  padding: 10px 0;
+  border-radius: 10px;
+  border: 1px solid rgba(212,175,55,0.35);
+  background: rgba(0,0,0,0.45);
+  color: #f5f1e8;
+  font-weight: 700;
+  letter-spacing: .4px;
+  cursor: pointer;
+}
+
+#loginPanel button:hover {
+  border-color: rgba(230,201,107,0.6);
+}
+
+#loginStatus {
+  margin-top: 10px;
+  font-size: .9rem;
+  opacity: .85;
+}

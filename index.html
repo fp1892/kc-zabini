@@ -7,114 +7,148 @@
 
   <!-- KC Hub styles -->
   <link rel="stylesheet" href="/assets/kc-hub.css" />
+
+  <!-- Shared lock / auth styles -->
+  <link rel="stylesheet" href="/assets/auth.css" />
 </head>
 
 <body>
-  <div class="container">
 
-    <!-- HEADER -->
-    <header class="header">
-      <div class="brand">
-        <div class="crest" aria-hidden="true"></div>
-        <div>
-          <div class="tag">kc.zabini.org</div>
-          <h1>King’s Choice</h1>
-          <div class="subtitle">
-            A curated hub for alliances, guides and tools.
-          </div>
-        </div>
-      </div>
+  <!-- LOGIN OVERLAY -->
+  <div id="loginOverlay">
+    <div id="loginPanel">
+      <h2>King’s Choice</h2>
 
-      <nav class="nav">
-        <a class="pill" href="https://www.zabini.org">Back to www.zabini.org</a>
-        <a class="pill" href="https://wiki.zabini.org">Open Zabini Wiki</a>
-      </nav>
-    </header>
+      <form id="loginForm">
+        <input
+          id="passwordInput"
+          type="password"
+          placeholder="Password"
+          required
+        />
+        <button type="submit">Unlock</button>
+      </form>
 
-    <!-- OVERVIEW -->
-    <section class="card">
-      <h2>Overview</h2>
-      <p class="kicker">
-        This hub is the entry point for all King’s Choice content hosted under kc.zabini.org.
-        Pick a section below to continue.
-      </p>
-
-      <div class="grid">
-        <div class="card card-inner">
-          <h3>Midoubuy</h3>
-          <p class="small">
-            Personal staging area and gateway to external tools and internal content.
-          </p>
-          <div class="actions">
-            <!-- only one button, since /midoubuy redirects to KCPay -->
-            <a class="pill" href="/midoubuy/">Midoubuy</a>
-          </div>
-        </div>
-
-        <div class="card card-inner">
-          <h3>Alliances</h3>
-          <p class="small">
-            Alliance structure, coordination pages and CAT resources (incl. MVP page).
-          </p>
-          <div class="actions">
-            <a class="pill" href="/alliances/">Alliances</a>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- GUIDES -->
-    <section class="card">
-      <h2>Guides</h2>
-      <p class="kicker">
-        Quick access to the most-used knowledge base pages.
-      </p>
-
-      <div class="grid">
-        <div class="card card-inner">
-          <h3>Events</h3>
-          <p class="small">
-            Event schedules, priorities, reward breakdowns and preparation checklists.
-          </p>
-          <div class="actions">
-            <a class="pill" href="/guides/events/">Events</a>
-          </div>
-        </div>
-
-        <div class="card card-inner">
-          <h3>Basics</h3>
-          <p class="small">
-            Core mechanics, progression strategy and fundamentals.
-          </p>
-          <div class="actions">
-            <a class="pill" href="/guides/basics/">Basics</a>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- SITE MAP -->
-    <section class="card">
-      <h2>Site Map</h2>
-      <p class="small">Current structure under kc.zabini.org</p>
-
-      <div class="tree">
-        <div class="node">/midoubuy</div>
-        <div class="node">/alliances</div>
-        <div class="node indent">/alliances/cat</div>
-        <div class="node indent2">/alliances/cat/mvp</div>
-        <div class="node">/guides</div>
-        <div class="node indent">/guides/events</div>
-        <div class="node indent">/guides/basics</div>
-        <div class="node indent2">/guides/basics/state-power</div>
-      </div>
-    </section>
-
-    <footer class="footer">
-      King’s Choice Hub · kc.zabini.org · Zabini internal use
-    </footer>
+      <div id="loginStatus"></div>
+    </div>
   </div>
 
-  <script src="/assets/kc-hub.js"></script>
+  <!-- PROTECTED CONTENT -->
+  <div id="protectedRoot" style="display:none;">
+    <div class="container">
+
+      <!-- HEADER -->
+      <header class="header">
+        <div class="brand">
+          <div class="crest" aria-hidden="true"></div>
+          <div>
+            <div class="tag">kc.zabini.org</div>
+            <h1>King’s Choice</h1>
+            <div class="subtitle">
+              A curated hub for alliances, guides and tools.
+            </div>
+          </div>
+        </div>
+
+        <nav class="nav">
+          <a class="pill" href="https://www.zabini.org">Back to www.zabini.org</a>
+          <a class="pill" href="https://wiki.zabini.org">Open Zabini Wiki</a>
+        </nav>
+      </header>
+
+      <!-- OVERVIEW -->
+      <section class="card">
+        <h2>Overview</h2>
+        <p class="kicker">
+          This hub is the entry point for all King’s Choice content hosted under kc.zabini.org.
+          Pick a section below to continue.
+        </p>
+
+        <div class="grid">
+          <div class="card card-inner">
+            <h3>Midoubuy</h3>
+            <p class="small">
+              Personal staging area and gateway to external tools and internal content.
+            </p>
+            <div class="actions">
+              <a class="pill" href="/midoubuy/">Midoubuy</a>
+            </div>
+          </div>
+
+          <div class="card card-inner">
+            <h3>Alliances</h3>
+            <p class="small">
+              Alliance structure, coordination pages and CAT resources (incl. MVP page).
+            </p>
+            <div class="actions">
+              <a class="pill" href="/alliances/">Alliances</a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- GUIDES -->
+      <section class="card">
+        <h2>Guides</h2>
+        <p class="kicker">
+          Quick access to the most-used knowledge base pages.
+        </p>
+
+        <div class="grid">
+          <div class="card card-inner">
+            <h3>Events</h3>
+            <p class="small">
+              Event schedules, priorities, reward breakdowns and preparation checklists.
+            </p>
+            <div class="actions">
+              <a class="pill" href="/guides/events/">Events</a>
+            </div>
+          </div>
+
+          <div class="card card-inner">
+            <h3>Basics</h3>
+            <p class="small">
+              Core mechanics, progression strategy and fundamentals.
+            </p>
+            <div class="actions">
+              <a class="pill" href="/guides/basics/">Basics</a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SITE MAP -->
+      <section class="card">
+        <h2>Site Map</h2>
+        <p class="small">Current structure under kc.zabini.org</p>
+
+        <div class="tree">
+          <div class="node">/midoubuy</div>
+          <div class="node">/alliances</div>
+          <div class="node indent">/alliances/cat</div>
+          <div class="node indent2">/alliances/cat/mvp</div>
+          <div class="node">/guides</div>
+          <div class="node indent">/guides/events</div>
+          <div class="node indent">/guides/basics</div>
+          <div class="node indent2">/guides/basics/state-power</div>
+        </div>
+      </section>
+
+      <footer class="footer">
+        King’s Choice Hub · kc.zabini.org · Zabini internal use
+      </footer>
+
+    </div>
+
+    <!-- Your existing optional helper -->
+    <script src="/assets/kc-hub.js"></script>
+  </div>
+
+  <!-- AUTH LOGIC -->
+  <script type="module">
+    import { initAuth } from "/assets/auth.js";
+    initAuth();
+  </script>
+
 </body>
 </html>

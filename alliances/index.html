@@ -2,93 +2,98 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Alliances · King's Choice</title>
+  <title>Alliances</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-  <!-- Alliances specific styles -->
-  <link rel="stylesheet" href="./assets/alliances.css" />
+  <link rel="stylesheet" href="/assets/alliances.css" />
+  <link rel="stylesheet" href="/assets/auth.css" />
 </head>
 
-<body style="background-image:url('./alliances-background.png');">
-  <main>
+<body style="background-image:url('/alliances/alliances-background.png');">
 
-    <!-- HEADER -->
-    <header>
-      <div class="tag">kc.zabini.org</div>
-      <h1>Alliances</h1>
-      <p>
-        A structured space for alliance-related knowledge and coordination.
-        This section is intentionally flexible and can grow with the needs
-        of each alliance.
-      </p>
+  <!-- LOGIN OVERLAY -->
+  <div id="loginOverlay">
+    <div id="loginPanel">
+      <h2>Alliances</h2>
+      <form id="loginForm">
+        <input id="passwordInput" type="password" placeholder="Password" required />
+        <button type="submit">Unlock</button>
+      </form>
+      <div id="loginStatus"></div>
+    </div>
+  </div>
 
-      <nav class="breadcrumbs">
-        <a href="/">www.zabini.org</a>
-        <span>›</span>
-        <a href="/">kc.zabini.org</a>
-        <span>›</span>
-        <span>alliances</span>
-      </nav>
-    </header>
-
-    <!-- CONTENT -->
-    <section>
-      <div class="card">
-        <h2>Alliance Sections</h2>
+  <!-- PROTECTED CONTENT -->
+  <div id="protectedRoot" style="display:none;">
+    <main>
+      <header>
+        <div class="tag">kc.zabini.org</div>
+        <h1>Alliances</h1>
         <p>
-          These sections represent alliance-specific areas.
-          Some already contain structured content, others are deliberately
-          left open for future expansion.
+          A structured space for alliance-related knowledge and coordination.
+          This section is intentionally flexible and can grow with the needs of each alliance.
         </p>
 
-        <div class="link-grid">
-          <!-- ACTIVE -->
-          <a class="link-tile" href="/alliances/cat/">
-            CAT
-            <span>
-              Core alliance structure and coordination pages, including MVP-related content.
-            </span>
-          </a>
+        <nav class="breadcrumbs">
+          <a href="https://www.zabini.org">www.zabini.org</a>
+          <span>›</span>
+          <a href="https://kc.zabini.org">kc.zabini.org</a>
+          <span>›</span>
+          <span>alliances</span>
+        </nav>
+      </header>
 
-          <!-- PLACEHOLDERS -->
-          <div class="link-tile disabled">
-            MWJ
-            <span>
-              No fixed destination yet. This area can be freely used for MWJ alliance content.
-            </span>
-          </div>
+      <section>
+        <div class="card">
+          <h2>Alliance Sections</h2>
+          <p>
+            These sections represent alliance-specific areas. Some already contain structured content,
+            others are deliberately left open for future expansion.
+          </p>
 
-          <div class="link-tile disabled">
-            BaS
-            <span>
-              Currently undefined. Intended as a flexible space for BaS-related notes.
-            </span>
-          </div>
+          <div class="link-grid">
+            <a class="link-tile" href="/alliances/cat/">
+              CAT
+              <span>Core alliance structure and coordination pages, including MVP-related content.</span>
+            </a>
 
-          <div class="link-tile disabled">
-            LoD
-            <span>
-              Placeholder section. Content and structure may be added as needed.
-            </span>
+            <div class="link-tile disabled">
+              MWJ
+              <span>No fixed destination yet. This area can be freely used for MWJ alliance content.</span>
+            </div>
+
+            <div class="link-tile disabled">
+              BaS
+              <span>Currently undefined. Intended as a flexible space for BaS-related notes.</span>
+            </div>
+
+            <div class="link-tile disabled">
+              LoD
+              <span>Placeholder section. Content and structure may be added as needed.</span>
+            </div>
           </div>
         </div>
-      </div>
 
-      <div class="card">
-        <h2>Note on Flexibility</h2>
-        <p>
-          Not every alliance area requires a predefined goal or layout.
-          The placeholders above exist to allow alliance leaders to add
-          guides, notes, or coordination pages whenever needed.
-        </p>
-      </div>
-    </section>
+        <div class="card">
+          <h2>Note on Flexibility</h2>
+          <p>
+            Not every alliance area requires a predefined goal or layout.
+            The placeholders above exist to allow alliance leaders to add guides, notes,
+            or coordination pages whenever needed.
+          </p>
+        </div>
+      </section>
 
-    <!-- FOOTER -->
-    <footer>
-      alliances.zabini.org · Organized under kc.zabini.org
-    </footer>
+      <footer>
+        alliances.zabini.org · Organized under kc.zabini.org
+      </footer>
+    </main>
+  </div>
 
-  </main>
+  <script type="module">
+    import { initAuth } from "/assets/auth.js";
+    initAuth();
+  </script>
+
 </body>
 </html>
