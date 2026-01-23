@@ -1,0 +1,200 @@
+@import url("https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=IM+Fell+English:ital@0;1&display=swap");
+
+:root{
+  --accent:#d4af37;
+  --accent-soft:#e6c96b;
+  --text:#f5f1e8;
+  --muted:rgba(245,241,232,.82);
+  --card-bg:rgba(10,10,14,0.82);
+  --border:rgba(212,175,55,0.25);
+}
+
+*{ box-sizing:border-box; }
+html,body{ min-height:100%; }
+
+body{
+  margin:0;
+  padding:34px;
+  color:var(--text);
+  font-family:"IM Fell English", ui-serif, Georgia, serif;
+  background-size:cover;
+  background-position:center;
+  background-attachment:fixed;
+}
+
+body::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  background:
+    radial-gradient(65% 60% at 50% 40%, rgba(0,0,0,0.12), rgba(0,0,0,0.78)),
+    linear-gradient(to bottom, rgba(0,0,0,0.45), rgba(0,0,0,0.82)),
+    rgba(0,0,0,0.55);
+  z-index:-1;
+}
+
+main{ max-width:1080px; margin:0 auto; }
+
+header{
+  margin-bottom:32px;
+  text-shadow:0 4px 14px rgba(0,0,0,0.85);
+}
+
+.tag{
+  display:inline-block;
+  font-size:.9rem;
+  padding:6px 12px;
+  border-radius:12px;
+  border:1px solid var(--border);
+  background:rgba(0,0,0,0.45);
+  margin-bottom:10px;
+  letter-spacing:.6px;
+}
+
+h1{
+  margin:0;
+  font-family:"Cinzel", serif;
+  font-size:2.7rem;
+  color:var(--accent);
+  letter-spacing:1.2px;
+  text-shadow:0 0 18px rgba(212,175,55,0.35);
+}
+
+header p{
+  max-width:760px;
+  color:var(--muted);
+  margin-top:12px;
+  font-size:1.05rem;
+}
+
+.breadcrumbs{
+  margin-top:12px;
+  font-size:.9rem;
+  color:var(--muted);
+}
+.breadcrumbs a{ color:var(--accent-soft); text-decoration:none; }
+.breadcrumbs span{ margin:0 6px; }
+
+.card{
+  background:var(--card-bg);
+  border:1px solid var(--border);
+  border-radius:18px;
+  padding:26px;
+  margin-bottom:26px;
+  box-shadow:0 25px 70px rgba(0,0,0,0.85), inset 0 0 0 1px rgba(255,255,255,0.03);
+  backdrop-filter:blur(14px);
+}
+
+h2{
+  margin:0 0 12px;
+  font-family:"Cinzel", serif;
+  color:var(--accent-soft);
+  letter-spacing:.6px;
+}
+h3{
+  margin:18px 0 10px;
+  font-family:"Cinzel", serif;
+  color:var(--accent-soft);
+}
+
+.kicker{ color:var(--muted); margin:0 0 10px; }
+
+.link-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));
+  gap:18px;
+  margin-top:14px;
+}
+
+.link-tile{
+  display:block;
+  padding:20px;
+  border-radius:16px;
+  border:1px solid var(--border);
+  background:rgba(0,0,0,0.35);
+  color:var(--text);
+  text-decoration:none;
+  font-weight:700;
+  letter-spacing:.4px;
+  box-shadow:0 18px 50px rgba(0,0,0,0.75), inset 0 0 0 1px rgba(255,255,255,0.03);
+  transition:transform .15s ease, box-shadow .15s ease, border-color .15s ease;
+}
+.link-tile span{
+  display:block;
+  margin-top:10px;
+  font-weight:400;
+  font-size:.95rem;
+  color:var(--muted);
+}
+.link-tile:hover{
+  transform:translateY(-3px);
+  border-color:var(--accent-soft);
+  box-shadow:0 26px 65px rgba(0,0,0,0.85), 0 0 26px rgba(212,175,55,0.25);
+}
+
+.card-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+}
+
+.pill{
+  display:inline-block;
+  padding:10px 14px;
+  border-radius:12px;
+  border:1px solid var(--border);
+  background:rgba(0,0,0,0.35);
+  color:var(--text);
+  font-weight:800;
+  letter-spacing:.35px;
+  text-decoration:none;
+  cursor:pointer;
+  box-shadow:0 12px 30px rgba(0,0,0,0.55);
+}
+.pill:hover{ border-color:rgba(230,201,107,0.6); }
+
+.pill.small{ padding:8px 12px; font-size:.92rem; }
+
+.topic{
+  padding:16px;
+  border-radius:14px;
+  border:1px solid rgba(212,175,55,0.20);
+  background:rgba(0,0,0,0.28);
+  margin-top:14px;
+}
+.topic h4{
+  margin:0 0 6px;
+  font-family:"Cinzel", serif;
+  color:var(--accent-soft);
+}
+.topic p{ margin:0; color:rgba(245,241,232,0.88); line-height:1.6; }
+
+.topic .meta{
+  display:flex;
+  justify-content:flex-end;
+  margin-top:10px;
+}
+
+.input, textarea{
+  width:100%;
+  padding:10px 12px;
+  border-radius:10px;
+  border:1px solid rgba(212,175,55,0.25);
+  background:rgba(0,0,0,0.45);
+  color:var(--text);
+}
+textarea{ min-height:110px; resize:vertical; }
+
+.footer{
+  margin-top:28px;
+  padding-top:16px;
+  border-top:1px solid var(--border);
+  font-size:.9rem;
+  color:rgba(245,241,232,0.65);
+  text-shadow:0 3px 10px rgba(0,0,0,0.85);
+}
+
+@media (max-width:860px){
+  body{ padding:22px; }
+}

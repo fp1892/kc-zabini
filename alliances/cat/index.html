@@ -4,49 +4,91 @@
   <meta charset="UTF-8" />
   <title>Alliance CAT</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link rel="stylesheet" href="/assets/site.css" />
+
+  <link rel="stylesheet" href="/assets/cat.css" />
+  <link rel="stylesheet" href="/assets/auth.css" />
 </head>
+
 <body style="background-image:url('/alliances/cat/cat-background.jpg');">
-  <main>
-    <header>
-      <div class="tag">alliances › cat</div>
-      <h1>CAT Overview</h1>
-      <p>
-        The CAT branch highlights alliance collaboration tactics and MVP planning. Select the next level to
-        access detailed notes.
-      </p>
-      <nav class="breadcrumbs">
-        <a href="/">www.zabini.org</a>
-        <span>›</span>
-        <a href="/alliances/">alliances</a>
-        <span>›</span>
-        <span>cat</span>
-      </nav>
-    </header>
 
-    <section>
-      <div class="card">
-        <h2>CAT Sections</h2>
-        <p>Continue to the MVP subsection for detailed coordination notes.</p>
-        <div class="link-grid">
-          <a class="link-tile" href="/alliances/cat/mvp/">
-            MVP
-            <span>Focused MVP structure and highlights.</span>
-          </a>
-        </div>
-      </div>
+  <!-- LOGIN OVERLAY (CAT PW via catHash) -->
+  <div id="loginOverlay">
+    <div id="loginPanel">
+      <h2>CAT Overview</h2>
+      <form id="loginForm">
+        <input id="passwordInput" type="password" placeholder="Password" required autocomplete="current-password" />
+        <button type="submit">Unlock</button>
+      </form>
+      <div id="loginStatus"></div>
+    </div>
+  </div>
 
-      <div class="card">
-        <h2>Transition Note</h2>
+  <!-- PROTECTED CONTENT -->
+  <div id="protectedRoot" style="display:none;">
+    <main>
+      <header>
+        <div class="tag">alliances › cat</div>
+        <h1>CAT Overview</h1>
         <p>
-          This overview page connects CAT to its detailed subsections. New items can be added here at any time.
+          The CAT branch highlights alliance collaboration tactics and MVP planning.
+          Select the next level to access detailed notes.
         </p>
-      </div>
-    </section>
 
-    <footer>
-      kc.zabini.org/alliances/cat
-    </footer>
-  </main>
+        <nav class="breadcrumbs">
+          <a href="https://www.zabini.org">www.zabini.org</a>
+          <span>›</span>
+          <a href="/alliances/">alliances</a>
+          <span>›</span>
+          <span>cat</span>
+        </nav>
+      </header>
+
+      <section>
+        <div class="card">
+          <h2>CAT Sections</h2>
+          <p class="kicker">Continue to the MVP subsection for detailed coordination notes.</p>
+
+          <div class="link-grid">
+            <a class="link-tile" href="/alliances/cat/mvp/">
+              MVP
+              <span>Focused MVP structure and highlights.</span>
+            </a>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <h2>Current Topics</h2>
+            <button id="adminToggle" class="pill small" type="button">Admin</button>
+          </div>
+
+          <div id="topicsList"></div>
+
+          <div id="adminPanel" style="display:none;">
+            <h3>Add Topic</h3>
+            <input id="topicTitle" class="input" type="text" placeholder="Title" />
+            <textarea id="topicText" placeholder="Text"></textarea>
+            <button id="addTopic" class="pill" type="button">Add</button>
+          </div>
+        </div>
+      </section>
+
+      <div class="footer">
+        kc.zabini.org/alliances/cat
+      </div>
+    </main>
+  </div>
+
+  <script type="module">
+    import { initAuth } from "/assets/auth.js";
+    import { initCAT } from "/assets/cat.js";
+
+    // CAT has its OWN password: config/security.catHash
+    initAuth({ sessionKey: "catUnlocked", hashField: "catHash" });
+
+    // Topics + Admin controls (adminHash)
+    initCAT();
+  </script>
+
 </body>
 </html>

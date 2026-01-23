@@ -1,6 +1,6 @@
 // /assets/auth.js
-// Standard password gate using Firestore: config/security.passwordHash
-// Requires anonymous sign-in so Firestore rules can allow read for auth'd users.
+// Generic password gate using Firestore: config/security[hashField]
+// Default: hashField = "passwordHash" (standard KC password)
 
 import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
 import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
@@ -17,8 +17,8 @@ async function sha256Hex(str) {
 }
 
 async function getSecurityDoc(db) {
-  const securityRef = doc(db, "config", "security");
-  const snap = await getDoc(securityRef);
+  const ref = doc(db, "config", "security");
+  const snap = await getDoc(ref);
   return snap.exists() ? (snap.data() || {}) : {};
 }
 
@@ -33,13 +33,15 @@ function setStatus(msg) {
 
 /**
  * initAuth({
- *   sessionKey: "kcUnlocked", // optional
+ *   sessionKey: "kcUnlocked" | "catUnlocked" | ...
+ *   hashField: "passwordHash" | "catHash" | ...
  * })
  */
 export async function initAuth(opts = {}) {
   const sessionKey = opts.sessionKey || "kcUnlocked";
+  const hashField = opts.hashField || "passwordHash";
 
-  // Already unlocked in this tab/session for this subdomain
+  // If user already unlocked in this tab, skip
   if (sessionStorage.getItem(sessionKey) === "1") {
     showProtected();
     return;
@@ -63,17 +65,17 @@ export async function initAuth(opts = {}) {
 
       try {
         const sec = await getSecurityDoc(db);
-        const passwordHash = sec.passwordHash;
+        const expectedHash = sec[hashField];
 
-        if (!passwordHash) {
-          setStatus("❌ passwordHash missing in config/security");
+        if (!expectedHash) {
+          setStatus(`❌ Missing ${hashField} in config/security`);
           return;
         }
 
         const entered = $("passwordInput").value || "";
         const enteredHash = await sha256Hex(entered);
 
-        if (enteredHash !== passwordHash) {
+        if (enteredHash !== expectedHash) {
           setStatus("❌ Wrong password");
           return;
         }
