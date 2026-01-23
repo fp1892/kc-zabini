@@ -16,7 +16,7 @@
     <div id="loginPanel">
       <h2>Alliances</h2>
       <form id="loginForm">
-        <input id="passwordInput" type="password" placeholder="Password" required />
+        <input id="passwordInput" type="password" placeholder="Password" required autocomplete="current-password" />
         <button type="submit">Unlock</button>
       </form>
       <div id="loginStatus"></div>
@@ -92,7 +92,8 @@
 
   <script type="module">
     import { initAuth } from "/assets/auth.js";
-    initAuth();
+    // use the same session key as the KC hub so one unlock covers everything under kc.zabini.org (this tab)
+    initAuth({ sessionKey: "kcUnlocked" });
   </script>
 
 </body>

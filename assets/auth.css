@@ -1,12 +1,11 @@
-/* ===== Global Lock Screen ===== */
+/* /assets/auth.css */
 
 #loginOverlay {
   position: fixed;
   inset: 0;
   z-index: 9999;
 
-  /* IMPORTANT: absolute URL so it also works from wiki.zabini.org */
-  background-image: url("https://kc.zabini.org/lock-screen.png");
+  background-image: url("/lock-screen.png");
   background-size: cover;
   background-position: center;
   background-attachment: fixed;
@@ -80,5 +79,5 @@
 #loginStatus {
   margin-top: 10px;
   font-size: .9rem;
-  opacity: .85;
+  opacity: .9;
 }

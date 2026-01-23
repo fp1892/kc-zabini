@@ -8,7 +8,7 @@
   <!-- KC Hub styles -->
   <link rel="stylesheet" href="/assets/kc-hub.css" />
 
-  <!-- Shared lock / auth styles -->
+  <!-- Lock screen styles -->
   <link rel="stylesheet" href="/assets/auth.css" />
 </head>
 
@@ -18,17 +18,16 @@
   <div id="loginOverlay">
     <div id="loginPanel">
       <h2>King’s Choice</h2>
-
       <form id="loginForm">
         <input
           id="passwordInput"
           type="password"
           placeholder="Password"
           required
+          autocomplete="current-password"
         />
         <button type="submit">Unlock</button>
       </form>
-
       <div id="loginStatus"></div>
     </div>
   </div>
@@ -52,7 +51,7 @@
 
         <nav class="nav">
           <a class="pill" href="https://www.zabini.org">Back to www.zabini.org</a>
-          <a class="pill" href="https://wiki.zabini.org">Open Zabini Wiki</a>
+          <a class="pill" href="https://wiki.zabini.org" data-service="wiki">Open Zabini Wiki</a>
         </nav>
       </header>
 
@@ -71,6 +70,7 @@
               Personal staging area and gateway to external tools and internal content.
             </p>
             <div class="actions">
+              <!-- /midoubuy redirects to KCPay -->
               <a class="pill" href="/midoubuy/">Midoubuy</a>
             </div>
           </div>
@@ -140,14 +140,15 @@
 
     </div>
 
-    <!-- Your existing optional helper -->
+    <!-- Optional helper -->
     <script src="/assets/kc-hub.js"></script>
   </div>
 
-  <!-- AUTH LOGIC -->
+  <!-- AUTH (Firebase/Firestore passwordHash) -->
   <script type="module">
     import { initAuth } from "/assets/auth.js";
-    initAuth();
+    // one unlock for the whole kc.zabini.org subdomain (this tab)
+    initAuth({ sessionKey: "kcUnlocked" });
   </script>
 
 </body>
