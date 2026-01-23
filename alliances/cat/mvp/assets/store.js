@@ -1,8 +1,10 @@
-import { doc, getDoc, setDoc, updateDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+import {
+  doc, getDoc, setDoc, updateDoc, onSnapshot
+} from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+
 import { db } from "./firebase.js";
 
-// 🔧 CHANGE THIS if your old data is stored under a different doc id.
-// Examples: "main" (default), "hellcats", "mvp", "cat-mvp"
+// 🔧 Change if your old data lived under another doc id (e.g. "hellcats")
 const STATE_DOC_ID = "main";
 
 export const refs = {
@@ -42,16 +44,12 @@ export function subscribeState(onData, onOnline, onError) {
   );
 }
 
-let saving = false;
 export async function saveState(state) {
-  if (saving) return;
-  saving = true;
   await updateDoc(refs.state, {
     persons: state.persons,
     events: state.events,
-    mvpCooldown: state.mvpCooldown
+    mvpCooldown: state.mvpCooldown,
   });
-  saving = false;
 }
 
 export async function writeUndoSnapshot(label) {
