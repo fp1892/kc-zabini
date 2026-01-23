@@ -5,11 +5,11 @@
   <title>Alliance CAT</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-  <link rel="stylesheet" href="/assets/cat.css" />
-  <link rel="stylesheet" href="/assets/auth.css" />
+  <link rel="stylesheet" href="./assets/cat.css" />
+  <link rel="stylesheet" href="../../assets/auth.css" />
 </head>
 
-<body style="background-image:url('/alliances/cat/cat-background.jpg');">
+<body style="background-image:url('./cat-background.jpg');">
 
   <!-- LOGIN OVERLAY (CAT PW via catHash) -->
   <div id="loginOverlay">
@@ -80,8 +80,8 @@
   </div>
 
   <script type="module">
-    import { initAuth } from "/assets/auth.js";
-    import { initCAT } from "/assets/cat.js";
+    import { initAuth } from "../../assets/auth.js";
+    import { initCAT } from "./assets/cat.js";
 
     // CAT has its OWN password: config/security.catHash
     initAuth({ sessionKey: "catUnlocked", hashField: "catHash" });
