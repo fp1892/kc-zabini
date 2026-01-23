@@ -11,12 +11,18 @@
 
 <body style="background-image:url('./cat-background.jpg');">
 
-  <!-- LOGIN OVERLAY (CAT PW via catHash) -->
+  <!-- LOGIN OVERLAY (CAT password via config/security.catHash) -->
   <div id="loginOverlay">
     <div id="loginPanel">
       <h2>CAT Overview</h2>
       <form id="loginForm">
-        <input id="passwordInput" type="password" placeholder="Password" required autocomplete="current-password" />
+        <input
+          id="passwordInput"
+          type="password"
+          placeholder="Password"
+          required
+          autocomplete="current-password"
+        />
         <button type="submit">Unlock</button>
       </form>
       <div id="loginStatus"></div>
@@ -26,6 +32,8 @@
   <!-- PROTECTED CONTENT -->
   <div id="protectedRoot" style="display:none;">
     <main>
+
+      <!-- HEADER -->
       <header>
         <div class="tag">alliances › cat</div>
         <h1>CAT Overview</h1>
@@ -43,32 +51,54 @@
         </nav>
       </header>
 
+      <!-- NAV / LINKS -->
       <section>
         <div class="card">
           <h2>CAT Sections</h2>
-          <p class="kicker">Continue to the MVP subsection for detailed coordination notes.</p>
+          <p class="kicker">
+            Continue to the MVP subsection for detailed coordination notes.
+          </p>
 
           <div class="link-grid">
             <a class="link-tile" href="/alliances/cat/mvp/">
               MVP
-              <span>Focused MVP structure and highlights.</span>
+              <span>Open the MVP app / notes section.</span>
             </a>
           </div>
         </div>
+      </section>
 
+      <!-- CURRENT TOPICS -->
+      <section>
         <div class="card">
           <div class="card-head">
             <h2>Current Topics</h2>
             <button id="adminToggle" class="pill small" type="button">Admin</button>
           </div>
 
+          <!-- topics are rendered here by cat.js -->
           <div id="topicsList"></div>
 
+          <!-- ADMIN PANEL (only visible after admin password) -->
           <div id="adminPanel" style="display:none;">
             <h3>Add Topic</h3>
-            <input id="topicTitle" class="input" type="text" placeholder="Title" />
-            <textarea id="topicText" placeholder="Text"></textarea>
+
+            <input
+              id="topicTitle"
+              class="input"
+              type="text"
+              placeholder="Title"
+            />
+
+            <textarea
+              id="topicText"
+              placeholder="Text"
+            ></textarea>
+
             <button id="addTopic" class="pill" type="button">Add</button>
+
+            <!-- status / error feedback -->
+            <div id="topicStatus" class="kicker" style="margin-top:10px;"></div>
           </div>
         </div>
       </section>
@@ -76,6 +106,7 @@
       <div class="footer">
         kc.zabini.org/alliances/cat
       </div>
+
     </main>
   </div>
 
