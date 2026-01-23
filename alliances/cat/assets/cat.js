@@ -1,4 +1,5 @@
-// /assets/cat.js
+// /assets/cat.js (LOUD DEBUG + Add/Delete)
+
 import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
 import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
 import {
@@ -16,6 +17,11 @@ import {
 import { firebaseConfig } from "/assets/firebase-config.js";
 
 function $(id){ return document.getElementById(id); }
+
+function setStatus(msg){
+  const el = $("topicStatus");
+  if (el) el.textContent = msg || "";
+}
 
 async function sha256Hex(str) {
   const enc = new TextEncoder().encode(str);
@@ -39,20 +45,36 @@ function escapeHtml(s){
 }
 
 export async function initCAT(){
+  // Basic DOM sanity check
+  const required = ["topicsList","adminToggle","adminPanel","addTopic","topicTitle","topicText"];
+  for (const id of required){
+    if (!$(id)) {
+      console.error("CAT missing element:", id);
+      setStatus(`❌ Missing element: #${id}`);
+      return;
+    }
+  }
+
+  setStatus("CAT loaded ✓");
+
   const app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
   const auth = getAuth(app);
   const db = getFirestore(app);
 
-  await signInAnonymously(auth);
+  try {
+    await signInAnonymously(auth);
+  } catch (e) {
+    console.error(e);
+    setStatus("❌ signInAnonymously failed (rules/auth)");
+    return;
+  }
 
-  // Collection for topics
   const topicsCol = collection(db, "catTopics");
   const topicsQ = query(topicsCol, orderBy("ts", "desc"));
 
   const listEl = $("topicsList");
   const adminToggle = $("adminToggle");
   const adminPanel = $("adminPanel");
-  const statusEl = $("topicStatus");
 
   const addBtn = $("addTopic");
   const titleEl = $("topicTitle");
@@ -60,15 +82,17 @@ export async function initCAT(){
 
   let isAdmin = sessionStorage.getItem("catAdminUnlocked") === "1";
 
-  function setStatus(msg){
-    if (!statusEl) return;
-    statusEl.textContent = msg || "";
+  function applyAdminUI(){
+    adminPanel.style.display = isAdmin ? "block" : "none";
+    adminToggle.textContent = isAdmin ? "Admin ✓" : "Admin";
   }
+  applyAdminUI();
 
-  function renderAllTopics(docs){
+  // Live render
+  onSnapshot(topicsQ, (snap) => {
     listEl.innerHTML = "";
 
-    if (!docs.length) {
+    if (snap.empty) {
       const empty = document.createElement("div");
       empty.className = "topic";
       empty.innerHTML = `<h4>No topics yet</h4><p>Add the first entry via Admin.</p>`;
@@ -76,7 +100,7 @@ export async function initCAT(){
       return;
     }
 
-    for (const d of docs) {
+    snap.forEach(d => {
       const data = d.data() || {};
       const wrap = document.createElement("div");
       wrap.className = "topic";
@@ -86,9 +110,6 @@ export async function initCAT(){
         <div class="meta"></div>
       `;
 
-      const meta = wrap.querySelector(".meta");
-
-      // ✅ Delete button only visible for admin
       if (isAdmin) {
         const del = document.createElement("button");
         del.className = "pill small";
@@ -103,46 +124,26 @@ export async function initCAT(){
             setTimeout(() => setStatus(""), 1200);
           } catch (e) {
             console.error(e);
-            setStatus("❌ Delete failed (check Firestore rules / console)");
+            setStatus(`❌ Delete failed: ${e?.code || e?.message || "unknown"}`);
           }
         });
-        meta.appendChild(del);
+        wrap.querySelector(".meta").appendChild(del);
       }
 
       listEl.appendChild(wrap);
-    }
-  }
-
-  // Live updates
-  let lastDocs = [];
-  onSnapshot(topicsQ, (snap) => {
-    lastDocs = snap.docs;
-    renderAllTopics(lastDocs);
+    });
+  }, (err) => {
+    console.error(err);
+    setStatus(`❌ onSnapshot failed: ${err?.code || err?.message || "unknown"}`);
   });
 
-  // Apply admin state to UI
-  function applyAdminUI(){
-    if (isAdmin) {
-      adminPanel.style.display = "block";
-      adminToggle.textContent = "Admin ✓";
-    } else {
-      adminPanel.style.display = "none";
-      adminToggle.textContent = "Admin";
-      setStatus("");
-    }
-    // re-render to show/hide delete buttons
-    renderAllTopics(lastDocs);
-  }
-
-  applyAdminUI();
-
-  // Admin unlock using adminHash
+  // Admin unlock
   adminToggle.addEventListener("click", async () => {
     if (isAdmin) {
-      // lock again
       isAdmin = false;
       sessionStorage.removeItem("catAdminUnlocked");
       applyAdminUI();
+      setStatus("Admin disabled");
       return;
     }
 
@@ -151,7 +152,7 @@ export async function initCAT(){
 
     setStatus("Checking admin…");
 
-    try {
+    try{
       const sec = await getSecurity(db);
       if (!sec.adminHash) {
         setStatus("❌ adminHash missing in config/security");
@@ -165,18 +166,21 @@ export async function initCAT(){
       }
 
       isAdmin = true;
-      sessionStorage.setItem("catAdminUnlocked", "1");
+      sessionStorage.setItem("catAdminUnlocked","1");
+      applyAdminUI();
       setStatus("✅ Admin enabled");
       setTimeout(() => setStatus(""), 1200);
-      applyAdminUI();
-    } catch (e) {
+
+    } catch(e){
       console.error(e);
-      setStatus("❌ Admin check failed (see console)");
+      setStatus(`❌ Admin check failed: ${e?.code || e?.message || "unknown"}`);
     }
   });
 
-  // Add topic
+  // ADD (this is the part you need)
   addBtn.addEventListener("click", async () => {
+    setStatus("Add clicked ✓");
+
     if (!isAdmin) {
       setStatus("❌ Admin required");
       return;
@@ -200,7 +204,7 @@ export async function initCAT(){
       setTimeout(() => setStatus(""), 1200);
     } catch (e) {
       console.error(e);
-      setStatus("❌ Add failed (check Firestore rules / console)");
+      setStatus(`❌ Add failed: ${e?.code || e?.message || "unknown"}`);
     }
   });
 }
