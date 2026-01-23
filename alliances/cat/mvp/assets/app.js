@@ -1,25 +1,19 @@
-console.log("APP VERSION", "v7-modular-structure");
+console.log("APP VERSION", "v7-modular-structure (shared auth)");
 
 import { ensureAnonAuth } from "./firebase.js";
-import { $, sleep } from "./utils.js";
+import { $, sleep, sha256Hex, downloadJson, readJsonFile } from "./utils.js";
 import * as store from "./store.js";
-import * as gate from "./auth-gate.js";
 import * as logic from "./logic.js";
 import * as ui from "./ui.js";
 
 let state = logic.defaultState();
 
 // status helpers
-function setLoginStatus(msg) { $("loginStatus").textContent = msg; }
 function setConn(msg) { $("connStatus").textContent = msg; }
 function setSaving(msg="") { $("saveStatus").textContent = msg; }
 function setAdminStatus(msg="") { $("adminStatus").textContent = msg; }
 
-function showApp() {
-  $("loginOverlay").style.display = "none";
-  $("appRoot").style.display = "block";
-}
-
+// admin state
 let isAdmin = sessionStorage.getItem("isAdmin") === "1";
 function applyAdminUi() {
   $("adminBadge").textContent = isAdmin ? "🛡 Admin" : "";
@@ -39,10 +33,17 @@ function closeAdminOverlay() {
   $("adminOverlay").style.display = "none";
 }
 
+async function checkAdminPassword(pass) {
+  const sec = await store.loadSecurity();
+  if (!sec?.adminHash) return false;
+  const hash = await sha256Hex(pass);
+  return hash === sec.adminHash;
+}
+
 async function unlockAdmin(pass) {
-  setAdminStatus("Prüfe…");
-  const ok = await gate.checkAdminPassword(pass);
-  if (!ok) return setAdminStatus("❌ Falsches Passwort");
+  setAdminStatus("Checking…");
+  const ok = await checkAdminPassword(pass);
+  if (!ok) return setAdminStatus("❌ Wrong password");
   isAdmin = true;
   sessionStorage.setItem("isAdmin", "1");
   applyAdminUi();
@@ -90,41 +91,46 @@ window.setCooldown = async function (v) {
 
 // backup / admin actions
 window.exportBackup = async function () {
-  const snap = await (await import("https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js"))
-    .then(() => null); // no-op; kept for compatibility
-  // Export from our current state (already synced)
-  const { downloadJson } = await import("./utils.js");
   downloadJson("hellcats-backup.json", state);
 };
 
 window.resetAll = async function () {
-  if (!isAdmin) return alert("Admin erforderlich");
+  if (!isAdmin) return alert("Admin required");
   await store.writeUndoSnapshot("reset");
   state = logic.defaultState();
   await store.overwriteState(state);
 };
 
 window.undoLast = async function () {
-  if (!isAdmin) return alert("Admin erforderlich");
+  if (!isAdmin) return alert("Admin required");
   const undo = await store.restoreUndo();
-  if (!undo) return alert("Kein Undo vorhanden");
+  if (!undo) return alert("No undo available");
   await store.overwriteState(undo);
 };
 
 async function persist() {
-  setSaving("💾 Speichert…");
+  setSaving("💾 Saving…");
   await store.saveState(state);
-  setSaving("✅ Gespeichert");
+  setSaving("✅ Saved");
   await sleep(600);
   setSaving("");
 }
 
-// import button (admin)
-$("importBtn").addEventListener("click", async () => {
-  if (!isAdmin) return alert("Admin erforderlich");
+// import helpers referenced by index onclick
+window.triggerImport = function () {
+  if (!isAdmin) return alert("Admin required");
+  $("importFile").click();
+};
+
+$("importFile").addEventListener("change", () => {
   const f = $("importFile").files?.[0];
-  if (!f) return alert("Bitte JSON-Datei auswählen");
-  const { readJsonFile } = await import("./utils.js");
+  $("importLabel").textContent = f ? f.name : "";
+});
+
+$("importBtn").addEventListener("click", async () => {
+  if (!isAdmin) return alert("Admin required");
+  const f = $("importFile").files?.[0];
+  if (!f) return alert("Select a JSON file");
   const data = await readJsonFile(f);
   await store.writeUndoSnapshot("import");
   await store.overwriteState(data);
@@ -137,23 +143,13 @@ $("adminForm").addEventListener("submit", async (e) => {
 
 // bootstrap
 applyAdminUi();
-setConn("🔌 Verbinde…");
-setLoginStatus("Verbinde…");
+setConn("🔌 Connecting…");
 
 await ensureAnonAuth();
-setLoginStatus("Bitte Passwort eingeben.");
+setConn("🟢 Online");
 
-$("loginForm").addEventListener("submit", async (e) => {
-  e.preventDefault();
-  const ok = await gate.checkPasswordGate($("passwordInput").value);
-  if (!ok) return setLoginStatus("❌ Falsches Passwort");
-
-  showApp();
-  setConn("🟢 Online");
-
-  await store.ensureStateDoc();
-  store.subscribeState((incoming) => {
-    state = { ...logic.defaultState(), ...incoming };
-    ui.render(state);
-  });
+await store.ensureStateDoc();
+store.subscribeState((incoming) => {
+  state = { ...logic.defaultState(), ...incoming };
+  ui.render(state);
 });
