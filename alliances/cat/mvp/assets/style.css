@@ -1,142 +1,140 @@
-:root {
-  --gold: #d4af37;
-  --gold-soft: #e6c96b;
-  --dark: #0b0a09;
-  --card-bg: rgba(15, 10, 10, 0.8);
-  --border: rgba(212, 175, 55, 0.35);
-  --text: #f5f1e8;
+@import url("https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=IM+Fell+English:ital@0;1&display=swap");
+
+:root{
+  --accent:#d4af37;
+  --accent-soft:#e6c96b;
+  --text:#f5f1e8;
+  --muted:rgba(245,241,232,.82);
+
+  --card-bg: rgba(10,10,14,0.78);
+  --border: rgba(212,175,55,0.22);
 }
 
-body {
-  margin: 0;
-  padding: 30px;
-  font-family: "Segoe UI", system-ui, sans-serif;
-  color: var(--text);
-  background-image: url("../background-image.jpg");
-  background-size: cover;
-  background-position: center;
-  background-attachment: fixed;
-  min-height: 100vh;
+*{ box-sizing:border-box; }
+html,body{ min-height:100%; }
+
+body{
+  margin:0;
+  padding:34px;
+  color:var(--text);
+  font-family:"IM Fell English", ui-serif, Georgia, serif;
+
+  background-size:cover;
+  background-position:center;
+  background-attachment:fixed;
 }
 
-
-body::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.65);
-  z-index: -1;
+/* darker readable overlay (no "golden trail") */
+body::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  background:
+    radial-gradient(70% 60% at 50% 40%, rgba(0,0,0,0.20), rgba(0,0,0,0.82)),
+    linear-gradient(to bottom, rgba(0,0,0,0.45), rgba(0,0,0,0.85)),
+    rgba(0,0,0,0.55);
+  z-index:-1;
 }
 
-h1 {
-  text-align: center;
-  color: var(--gold);
-  font-size: 3rem;
-  letter-spacing: 3px;
-  text-shadow: 0 0 20px rgba(212,175,55,0.6);
+/* App container */
+#appRoot{
+  max-width:1080px;
+  margin:0 auto;
 }
 
-.card {
-  background: var(--card-bg);
-  backdrop-filter: blur(8px);
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  padding: 20px;
-  margin-bottom: 25px;
-  box-shadow: 0 15px 40px rgba(0,0,0,0.7);
+h1{
+  margin:0 0 8px;
+  font-family:"Cinzel", serif;
+  font-size:2.6rem;
+  color:var(--accent);
+  letter-spacing:1.2px;
+  text-shadow:0 0 18px rgba(212,175,55,0.30);
 }
 
-.card h2 {
-  color: var(--gold-soft);
-  margin-top: 0;
+h2{
+  margin:0 0 12px;
+  font-family:"Cinzel", serif;
+  color:var(--accent-soft);
+  letter-spacing:.6px;
 }
 
-input, select {
-  width: 100%;
-  padding: 8px;
-  margin-bottom: 10px;
-  background: #120e0d;
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  color: var(--text);
+label{
+  display:block;
+  margin:6px 0;
+  color:var(--muted);
 }
 
-button {
-  background: linear-gradient(145deg, #d4af37, #8f6b1e);
-  color: #1a1305;
-  border: none;
-  border-radius: 6px;
-  padding: 7px 14px;
-  font-weight: 600;
-  cursor: pointer;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.6);
-  transition: all 0.2s ease;
+.card{
+  background:var(--card-bg);
+  border:1px solid var(--border);
+  border-radius:18px;
+  padding:22px;
+  margin:18px 0;
+  box-shadow:0 18px 60px rgba(0,0,0,0.80);
+  backdrop-filter: blur(12px);
 }
 
-button:hover {
+button{
+  border:1px solid var(--border);
+  background:rgba(0,0,0,0.35);
+  color:var(--text);
+  padding:10px 12px;
+  border-radius:12px;
+  font-weight:800;
+  cursor:pointer;
+  box-shadow:0 12px 30px rgba(0,0,0,0.55);
+  transition: transform .15s ease, border-color .15s ease, box-shadow .15s ease;
+}
+
+button:hover{
   transform: translateY(-1px);
-  box-shadow: 0 6px 18px rgba(212,175,55,0.8);
+  border-color: rgba(230,201,107,0.55);
+  box-shadow:0 18px 45px rgba(0,0,0,0.70);
 }
 
-table {
-  width: 100%;
+button:disabled{
+  opacity:.55;
+  cursor:not-allowed;
+}
+
+input{
+  width:100%;
+  padding:10px 12px;
+  border-radius:12px;
+  border:1px solid rgba(212,175,55,0.25);
+  background:rgba(0,0,0,0.45);
+  color:var(--text);
+}
+
+table{
+  width:100%;
   border-collapse: collapse;
+  overflow:hidden;
+  border-radius:14px;
+  border:1px solid rgba(212,175,55,0.18);
 }
 
-th, td {
-  padding: 10px;
-  border-bottom: 1px solid var(--border);
+th, td{
+  padding:10px 10px;
+  border-bottom:1px solid rgba(212,175,55,0.12);
+  text-align:left;
+  vertical-align:middle;
 }
 
-th {
-  color: var(--gold);
+th{
+  color:var(--accent-soft);
+  font-family:"Cinzel", serif;
+  letter-spacing:.4px;
 }
 
-tr:hover {
-  background: rgba(212,175,55,0.08);
+.result{
+  margin-top:12px;
+  padding:12px;
+  border-radius:14px;
+  border:1px solid rgba(212,175,55,0.18);
+  background:rgba(0,0,0,0.28);
 }
 
-.result {
-  margin-top: 15px;
-  padding: 12px;
-  border-radius: 8px;
-  background: rgba(212,175,55,0.15);
-  border: 1px solid var(--border);
-  text-align: center;
-  color: var(--gold-soft);
-  font-weight: bold;
-}
-
-/* ===== Option B: UI Polish (Login + Status) ===== */
-
-#loginOverlay {
-  backdrop-filter: blur(6px);
-}
-
-#loginOverlay h2 {
-  color: var(--gold);
-}
-
-#loginOverlay p {
-  color: var(--text);
-}
-
-#statusBar {
-  text-align: center;
-  font-size: 0.95rem;
-}
-
-#connStatus {
-  color: var(--gold-soft);
-}
-
-#saveStatus {
-  color: var(--gold);
-}
-
-button:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-  transform: none;
-  box-shadow: none;
+@media (max-width:860px){
+  body{ padding:22px; }
 }
