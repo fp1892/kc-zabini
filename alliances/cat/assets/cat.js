@@ -1,4 +1,4 @@
-// /assets/cat.js (LOUD DEBUG + Add/Delete)
+// /assets/cat.js (FINAL)
 
 import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
 import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
@@ -18,9 +18,13 @@ import { firebaseConfig } from "/assets/firebase-config.js";
 
 function $(id){ return document.getElementById(id); }
 
-function setStatus(msg){
-  const el = $("topicStatus");
-  if (el) el.textContent = msg || "";
+function escapeHtml(s){
+  return String(s)
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
 }
 
 async function sha256Hex(str) {
@@ -35,39 +39,21 @@ async function getSecurity(db){
   return snap.exists() ? (snap.data() || {}) : {};
 }
 
-function escapeHtml(s){
-  return String(s)
-    .replaceAll("&","&amp;")
-    .replaceAll("<","&lt;")
-    .replaceAll(">","&gt;")
-    .replaceAll('"',"&quot;")
-    .replaceAll("'","&#039;");
-}
-
 export async function initCAT(){
-  // Basic DOM sanity check
+  // required DOM
   const required = ["topicsList","adminToggle","adminPanel","addTopic","topicTitle","topicText"];
   for (const id of required){
     if (!$(id)) {
       console.error("CAT missing element:", id);
-      setStatus(`❌ Missing element: #${id}`);
       return;
     }
   }
-
-  setStatus("CAT loaded ✓");
 
   const app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
   const auth = getAuth(app);
   const db = getFirestore(app);
 
-  try {
-    await signInAnonymously(auth);
-  } catch (e) {
-    console.error(e);
-    setStatus("❌ signInAnonymously failed (rules/auth)");
-    return;
-  }
+  await signInAnonymously(auth);
 
   const topicsCol = collection(db, "catTopics");
   const topicsQ = query(topicsCol, orderBy("ts", "desc"));
@@ -75,24 +61,43 @@ export async function initCAT(){
   const listEl = $("topicsList");
   const adminToggle = $("adminToggle");
   const adminPanel = $("adminPanel");
-
   const addBtn = $("addTopic");
   const titleEl = $("topicTitle");
   const textEl = $("topicText");
 
+  const statusEl = $("topicStatus");
+  const setStatus = (msg) => { if (statusEl) statusEl.textContent = msg || ""; };
+
+  // ✅ Admin state survives refresh (same tab)
   let isAdmin = sessionStorage.getItem("catAdminUnlocked") === "1";
+
+  // We'll keep the latest docs so we can re-render when admin toggles
+  let latestDocs = [];
 
   function applyAdminUI(){
     adminPanel.style.display = isAdmin ? "block" : "none";
     adminToggle.textContent = isAdmin ? "Admin ✓" : "Admin";
   }
-  applyAdminUI();
 
-  // Live render
-  onSnapshot(topicsQ, (snap) => {
+  async function handleDelete(docId){
+    if (!isAdmin) return;
+
+    if (!confirm("Delete this topic?")) return;
+    setStatus("Deleting…");
+    try {
+      await deleteDoc(doc(db, "catTopics", docId));
+      setStatus("✅ Deleted");
+      setTimeout(() => setStatus(""), 1200);
+    } catch (e) {
+      console.error(e);
+      setStatus(`❌ Delete failed: ${e?.code || e?.message || "unknown"}`);
+    }
+  }
+
+  function render(){
     listEl.innerHTML = "";
 
-    if (snap.empty) {
+    if (!latestDocs.length) {
       const empty = document.createElement("div");
       empty.className = "topic";
       empty.innerHTML = `<h4>No topics yet</h4><p>Add the first entry via Admin.</p>`;
@@ -100,50 +105,54 @@ export async function initCAT(){
       return;
     }
 
-    snap.forEach(d => {
+    for (const d of latestDocs) {
       const data = d.data() || {};
       const wrap = document.createElement("div");
       wrap.className = "topic";
+
       wrap.innerHTML = `
         <h4>${escapeHtml(data.title || "")}</h4>
         <p>${escapeHtml(data.text || "")}</p>
         <div class="meta"></div>
       `;
 
+      const meta = wrap.querySelector(".meta");
+
+      // ✅ Always show delete button for admin (even after refresh)
       if (isAdmin) {
         const del = document.createElement("button");
         del.className = "pill small";
         del.type = "button";
         del.textContent = "Delete";
-        del.addEventListener("click", async () => {
-          if (!confirm("Delete this topic?")) return;
-          setStatus("Deleting…");
-          try {
-            await deleteDoc(doc(db, "catTopics", d.id));
-            setStatus("✅ Deleted");
-            setTimeout(() => setStatus(""), 1200);
-          } catch (e) {
-            console.error(e);
-            setStatus(`❌ Delete failed: ${e?.code || e?.message || "unknown"}`);
-          }
-        });
-        wrap.querySelector(".meta").appendChild(del);
+        del.addEventListener("click", () => handleDelete(d.id));
+        meta.appendChild(del);
       }
 
       listEl.appendChild(wrap);
-    });
+    }
+  }
+
+  // initial UI
+  applyAdminUI();
+
+  // Live updates
+  onSnapshot(topicsQ, (snap) => {
+    latestDocs = snap.docs;
+    render();
   }, (err) => {
     console.error(err);
-    setStatus(`❌ onSnapshot failed: ${err?.code || err?.message || "unknown"}`);
+    setStatus(`❌ Load failed: ${err?.code || err?.message || "unknown"}`);
   });
 
-  // Admin unlock
+  // Admin toggle (unlock/lock) – no reload needed
   adminToggle.addEventListener("click", async () => {
     if (isAdmin) {
       isAdmin = false;
       sessionStorage.removeItem("catAdminUnlocked");
       applyAdminUI();
+      render();
       setStatus("Admin disabled");
+      setTimeout(() => setStatus(""), 1200);
       return;
     }
 
@@ -151,8 +160,7 @@ export async function initCAT(){
     if (!pw) return;
 
     setStatus("Checking admin…");
-
-    try{
+    try {
       const sec = await getSecurity(db);
       if (!sec.adminHash) {
         setStatus("❌ adminHash missing in config/security");
@@ -168,19 +176,17 @@ export async function initCAT(){
       isAdmin = true;
       sessionStorage.setItem("catAdminUnlocked","1");
       applyAdminUI();
+      render();
       setStatus("✅ Admin enabled");
       setTimeout(() => setStatus(""), 1200);
-
-    } catch(e){
+    } catch (e) {
       console.error(e);
       setStatus(`❌ Admin check failed: ${e?.code || e?.message || "unknown"}`);
     }
   });
 
-  // ADD (this is the part you need)
+  // Add topic
   addBtn.addEventListener("click", async () => {
-    setStatus("Add clicked ✓");
-
     if (!isAdmin) {
       setStatus("❌ Admin required");
       return;
@@ -188,14 +194,12 @@ export async function initCAT(){
 
     const title = (titleEl.value || "").trim();
     const text = (textEl.value || "").trim();
-
     if (!title || !text) {
       setStatus("❌ Please enter title and text");
       return;
     }
 
     setStatus("Adding…");
-
     try {
       await addDoc(topicsCol, { title, text, ts: Date.now() });
       titleEl.value = "";
