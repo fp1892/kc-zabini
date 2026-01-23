@@ -5,7 +5,7 @@
   <title>Hellcats MVP</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-  <!-- MVP app styles (local) -->
+  <!-- local app styles -->
   <link rel="stylesheet" href="./assets/style.css" />
 
   <!-- shared lock screen styles -->
@@ -14,7 +14,7 @@
 
 <body style="background-image:url('./cat-background.jpg');">
 
-  <!-- LOGIN OVERLAY (shared auth.js) -->
+  <!-- LOCK SCREEN (shared /assets/auth.js expects these IDs) -->
   <div id="loginOverlay">
     <div id="loginPanel">
       <h2>Hellcats MVP</h2>
@@ -29,6 +29,7 @@
   <!-- PROTECTED CONTENT -->
   <div id="protectedRoot" style="display:none;">
     <div id="appRoot">
+
       <h1>HELLCATS MVP</h1>
 
       <!-- STATUS BAR -->
@@ -102,47 +103,52 @@
         <button onclick="calculateMVP()">Calculate MVP</button>
         <div id="mvpResult" class="result"></div>
       </div>
+
     </div>
 
-    <!-- shared auth (CAT password) -->
+    <!-- ADMIN OVERLAY (needed by app.js) -->
+    <div id="adminOverlay" style="
+      position:fixed; inset:0; display:none; place-items:center;
+      background:rgba(0,0,0,.65); z-index:9998;
+    ">
+      <div style="
+        width:min(420px, calc(100% - 28px));
+        background:#111; border:1px solid #333; border-radius:12px;
+        padding:18px; color:#fff;
+      ">
+        <h2 style="margin:0 0 8px;">Admin</h2>
+        <p style="margin:0 0 12px; opacity:.85;">Admin password required.</p>
+
+        <form id="adminForm" style="display:flex; gap:10px;">
+          <input id="adminPasswordInput" type="password" placeholder="Admin password" required
+            style="flex:1; padding:10px; border-radius:10px; border:1px solid #444; background:#0b0b0b; color:#fff;" />
+          <button type="submit"
+            style="padding:10px 12px; border-radius:10px; border:1px solid #444; background:#1a1a1a; color:#fff; cursor:pointer;">
+            Unlock
+          </button>
+          <button type="button" onclick="closeAdminOverlay()"
+            style="padding:10px 12px; border-radius:10px; border:1px solid #444; background:#1a1a1a; color:#fff; cursor:pointer;">
+            X
+          </button>
+        </form>
+
+        <div id="adminStatus" style="margin-top:10px; min-height:20px; opacity:.9;"></div>
+      </div>
+    </div>
+
+    <!-- 🔐 shared lockscreen logic -->
     <script type="module">
       import { initAuth } from "/assets/auth.js";
+
+      // OPTION A (recommended): CAT password to enter, admin password only for destructive actions
       initAuth({ sessionKey: "catMvpUnlocked", hashField: "catHash" });
+
+      // OPTION B (single password): ONLY admin can even open the MVP page
+      // initAuth({ sessionKey: "catMvpUnlocked", hashField: "adminHash" });
     </script>
 
     <!-- MVP app -->
     <script type="module" src="./assets/app.js"></script>
   </div>
-
-  <!-- Optional admin overlay HTML (ONLY if your app.js expects these elements) -->
-  <div id="adminOverlay" style="
-    position:fixed; inset:0; display:none; place-items:center;
-    background:rgba(0,0,0,.65); z-index:9998;
-  ">
-    <div style="
-      width:min(420px, calc(100% - 28px));
-      background:#111; border:1px solid #333; border-radius:12px;
-      padding:18px; color:#fff;
-    ">
-      <h2 style="margin:0 0 8px;">Admin</h2>
-      <p style="margin:0 0 12px; opacity:.85;">Admin password required.</p>
-
-      <form id="adminForm" style="display:flex; gap:10px;">
-        <input id="adminPasswordInput" type="password" placeholder="Admin password" required
-          style="flex:1; padding:10px; border-radius:10px; border:1px solid #444; background:#0b0b0b; color:#fff;" />
-        <button type="submit"
-          style="padding:10px 12px; border-radius:10px; border:1px solid #444; background:#1a1a1a; color:#fff; cursor:pointer;">
-          Unlock
-        </button>
-        <button type="button" onclick="closeAdminOverlay()"
-          style="padding:10px 12px; border-radius:10px; border:1px solid #444; background:#1a1a1a; color:#fff; cursor:pointer;">
-          X
-        </button>
-      </form>
-
-      <div id="adminStatus" style="margin-top:10px; min-height:20px; opacity:.9;"></div>
-    </div>
-  </div>
-
 </body>
 </html>

@@ -1,7 +1,7 @@
-console.log("APP VERSION", "v7-modular-structure (shared auth)");
+console.log("APP VERSION", "v7-mvp (shared auth, admin actions)");
 
 import { ensureAnonAuth } from "./firebase.js";
-import { $, sleep, sha256Hex, downloadJson, readJsonFile } from "./utils.js";
+import { $, sleep } from "./utils.js";          // utils.js muss existieren
 import * as store from "./store.js";
 import * as logic from "./logic.js";
 import * as ui from "./ui.js";
@@ -33,6 +33,12 @@ function closeAdminOverlay() {
   $("adminOverlay").style.display = "none";
 }
 
+async function sha256Hex(str) {
+  const enc = new TextEncoder().encode(str);
+  const hashBuf = await crypto.subtle.digest("SHA-256", enc);
+  return Array.from(new Uint8Array(hashBuf)).map(b => b.toString(16).padStart(2,"0")).join("");
+}
+
 async function checkAdminPassword(pass) {
   const sec = await store.loadSecurity();
   if (!sec?.adminHash) return false;
@@ -61,7 +67,7 @@ window.openAdminOverlay = openAdminOverlay;
 window.closeAdminOverlay = closeAdminOverlay;
 window.lockAdmin = lockAdmin;
 
-// app actions (global for onclick in rendered table)
+// app actions
 window.addPerson = async function () {
   const input = $("newName");
   state = logic.addPerson(state, input.value);
@@ -91,6 +97,7 @@ window.setCooldown = async function (v) {
 
 // backup / admin actions
 window.exportBackup = async function () {
+  const { downloadJson } = await import("./utils.js");
   downloadJson("hellcats-backup.json", state);
 };
 
@@ -116,7 +123,7 @@ async function persist() {
   setSaving("");
 }
 
-// import helpers referenced by index onclick
+// import helpers
 window.triggerImport = function () {
   if (!isAdmin) return alert("Admin required");
   $("importFile").click();
@@ -131,6 +138,7 @@ $("importBtn").addEventListener("click", async () => {
   if (!isAdmin) return alert("Admin required");
   const f = $("importFile").files?.[0];
   if (!f) return alert("Select a JSON file");
+  const { readJsonFile } = await import("./utils.js");
   const data = await readJsonFile(f);
   await store.writeUndoSnapshot("import");
   await store.overwriteState(data);
@@ -146,10 +154,13 @@ applyAdminUi();
 setConn("🔌 Connecting…");
 
 await ensureAnonAuth();
-setConn("🟢 Online");
 
 await store.ensureStateDoc();
-store.subscribeState((incoming) => {
-  state = { ...logic.defaultState(), ...incoming };
-  ui.render(state);
-});
+store.subscribeState(
+  (incoming) => {
+    state = { ...logic.defaultState(), ...incoming };
+    ui.render(state);
+  },
+  () => setConn("🟢 Online"),
+  (err) => setConn(`❌ ${err?.code || "error"}`)
+);

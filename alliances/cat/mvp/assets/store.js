@@ -1,9 +1,13 @@
 import { doc, getDoc, setDoc, updateDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 import { db } from "./firebase.js";
 
+// 🔧 CHANGE THIS if your old data is stored under a different doc id.
+// Examples: "main" (default), "hellcats", "mvp", "cat-mvp"
+const STATE_DOC_ID = "main";
+
 export const refs = {
-  state: doc(db, "state", "main"),
-  undo: doc(db, "state", "undo"),
+  state: doc(db, "state", STATE_DOC_ID),
+  undo: doc(db, "state", `${STATE_DOC_ID}_undo`),
   security: doc(db, "config", "security"),
 };
 
@@ -19,16 +23,23 @@ export async function loadSecurity() {
   return snap.exists() ? snap.data() : null;
 }
 
-export function subscribeState(onData, onOnline) {
-  return onSnapshot(refs.state, snap => {
-    const d = snap.data() || {};
-    onData({
-      persons: d.persons || [],
-      events: d.events || [],
-      mvpCooldown: d.mvpCooldown ?? 1,
-    });
-    onOnline?.();
-  });
+export function subscribeState(onData, onOnline, onError) {
+  return onSnapshot(
+    refs.state,
+    snap => {
+      const d = snap.data() || {};
+      onData({
+        persons: d.persons || [],
+        events: d.events || [],
+        mvpCooldown: d.mvpCooldown ?? 1,
+      });
+      onOnline?.();
+    },
+    err => {
+      console.error(err);
+      onError?.(err);
+    }
+  );
 }
 
 let saving = false;
